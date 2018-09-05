@@ -4,7 +4,7 @@ class App extends Component {
   state = {users: []}
 
   componentDidMount(res) {
-    fetch('/users')
+    fetch('/companies')
     .then(res => res.json())
     .then(users => this.setState({ users }));
   }
@@ -13,8 +13,9 @@ class App extends Component {
     return (
       <div className="App">
         <h1>Users</h1>
-        {this.state.users.map(user =>
-          <div key={user.id}>{user.username}</div>
+        {this.state.users.map(company =>
+          <div key={company.id}>{company.name} {company.address} {company.nip} {company.regon}
+          {company.telephoneNumber} {company.email}</div>
         )}
       </div>
     );
