@@ -44,13 +44,15 @@ Company.findAll().then(aa => res.json(aa));
 });
 
 router.post('/', function (req, res) {
-  const newCompany = req.body;
-  console.log(req.body);
-  sequelize.sync()
-    .then(() => Company.create(newCompany))
-    .success(console.log('ok'));
 
-  res.send('POST request to the homepage')
+  console.log('>>' + res);
+
+  const newCompany = req.body;
+  Company.create(newCompany)
+  .then( (newCompany) => res.status(200).json(newCompany));
+
+
+
 })
 /*
 

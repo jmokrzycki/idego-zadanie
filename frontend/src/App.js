@@ -26,6 +26,11 @@ class App extends Component {
   handleAddCompany(event) {
     event.preventDefault();
 
+this.setState({companies:
+   [...this.state.companies,
+  ]
+});
+
     fetch('/companies', {
       method: 'POST',
       headers: {
@@ -39,8 +44,11 @@ class App extends Component {
         "regon": this.state.newCompanyRegon,
         "phoneNumber": this.state.newCompanyPhoneNumber,
         "email": this.state.newCompanyEmail,
-      }),
-    })
+      })
+    }).then(res => res.json()).then(newCompany => this.setState({companies:
+       [...this.state.companies,
+         newCompany
+      ]}));
   }
 
   handleInputChange(event) {
