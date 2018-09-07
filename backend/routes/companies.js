@@ -31,10 +31,6 @@ const Company = sequelize.define('company', {
   email: Sequelize.STRING,
 });
 
-//Company.findAll().then(aa => console.log(aa));
-
-//==
-/* GET users listing. */
 router.get('/', function(req, res, next) {
 	// Comment out this line:
   //res.send('respond with a resource');
@@ -44,17 +40,9 @@ Company.findAll().then(aa => res.json(aa));
 });
 
 router.post('/', function (req, res) {
-
-  console.log('>>' + res);
-
   const newCompany = req.body;
   Company.create(newCompany)
-  .then( (newCompany) => res.status(200).json(newCompany));
-
-
-
+  .then((newCompany) => res.status(200).json(newCompany));
 })
-/*
 
-*/
 module.exports = router;
