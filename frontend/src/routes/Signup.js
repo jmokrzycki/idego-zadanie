@@ -1,41 +1,39 @@
 import React, { Component } from 'react';
 
 class Signup extends React.Component {
-  constructor(){
-    super();
-  }
-  state = {
-    redirectToReferrer: false
-  };
+  constructor(props){
+    super(props);
 
+    this.state = {
+      username: "",
+      password: "",
+      email: "",
+    };
 
-/*  login.fakeAuth.authenticate( ()=> {
-    this.setState({ redirectToReferrer: true })
+    this.handleInputChange = this.handleInputChange.bind(this);
+    this.handleSignup = this.handleSignup.bind(this);
   }
-*/
 
 handleSignup(event) {
   event.preventDefault();
 
-  fetch('/login', {
+  fetch('/signup', {
     method: 'POST',
     headers: {
       'Accept': 'application/json',
       'Content-Type': 'application/json'
     },
     body: JSON.stringify({
-      "login": this.state.login,
+      "username": this.state.username,
       "password": this.state.password,
+      "email": this.state.email,
     })
-  }).then(res => res.json()).then(data => console.log(data));
+  });
 }
 
 handleInputChange(event) {
-  const value = event.target.value;
-  const name = event.target.name;
-
   this.setState({
-    [name]: value
+    [event.target.name]: event.target.value
   });
 }
 
@@ -44,11 +42,14 @@ handleInputChange(event) {
     return (
       <div>
       <form onSubmit={this.handleSignup}>
-        <label htmlFor="login">Login</label>
-        <input id="login" name="login" type="text" onChange={this.handleInputChange}/>
+        <label htmlFor="username">Login</label>
+        <input id="username" name="username" type="text" onChange={this.handleInputChange}/>
         <br />
         <label htmlFor="password">Password</label>
         <input id="password" name="password" type="text" onChange={this.handleInputChange}/>
+        <br />
+        <label htmlFor="email">Email</label>
+        <input id="email" name="email" type="text" onChange={this.handleInputChange}/>
         <br />
         <button>Send data!</button>
       </form>

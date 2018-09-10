@@ -1,59 +1,64 @@
 import React, { Component } from 'react';
+import AuthService from './AuthService';
 
 class Login extends React.Component {
-  constructor(){
-    super();
-  }
-  state = {
-    redirectToReferrer: false
-  };
+  constructor(props){
+    super(props);
+    this.state = {
+          username: "",
+          password: "",
+    }
 
+    this.handleInputChange = this.handleInputChange.bind(this);
+    this.handleLogin = this.handleLogin.bind(this);
+    this.handleLogout = this.handleLogout.bind(this);
 
-/*  login.fakeAuth.authenticate( ()=> {
-    this.setState({ redirectToReferrer: true })
+    this.Auth = new AuthService();
   }
-*/
 
 handleLogin(event) {
   event.preventDefault();
 
-  fetch('/login', {
-    method: 'POST',
-    headers: {
-      'Accept': 'application/json',
-      'Content-Type': 'application/json'
-    },
-    body: JSON.stringify({
-      "login": this.state.login,
-      "password": this.state.password,
-    })
-  }).then(res => res.json()).then(data => console.log(data));
+  this.Auth.login(this.state.username,this.state.password)
+      .then(res =>{
+         this.props.history.replace('/');
+      })
+      .catch(err =>{
+          alert(err);
+      })
+}
+
+handleLogout(){
+  this.Auth.logout();
 }
 
 handleInputChange(event) {
-  const value = event.target.value;
-  const name = event.target.name;
-
+  console.log(this)
   this.setState({
-    [name]: value
+    [event.target.name]: event.target.value
   });
 }
 
 
+
   render() {
-    return (
-      <div>
-      <form onSubmit={this.handleLogin}>
-        <label htmlFor="login">Login</label>
-        <input id="login" name="login" type="text" onChange={this.handleInputChange}/>
-        <br />
-        <label htmlFor="password">Password</label>
-        <input id="password" name="password" type="text" onChange={this.handleInputChange}/>
-        <br />
-        <button>Send data!</button>
-      </form>
-      </div>
-    );
+    if(!this.Auth.loggedIn()){
+      return (
+        <div>
+          <form onSubmit={this.handleLogin}>
+            <label htmlFor="username">Login</label>
+            <input id="username" name="username" type="text" onChange={this.handleInputChange}/>
+            <br />
+            <label htmlFor="password">Password</label>
+            <input id="password" name="password" type="text" onChange={this.handleInputChange}/>
+            <br />
+            <button>Send data!</button>
+          </form>
+        </div>
+      );
+    } else {
+      return <button onClick={this.handleLogout}>Logout</button>;
+    }
   }
 }
 

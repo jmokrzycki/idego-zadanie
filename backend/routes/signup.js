@@ -1,6 +1,10 @@
 var express = require('express');
 var router = express.Router();
 
+const jwt = require('jsonwebtoken');
+
+const passwordHash = require('password-hash');
+
 //==
 const Sequelize = require('sequelize');
 const sequelize = new Sequelize('database', 'username', 'password', {
@@ -22,25 +26,22 @@ const sequelize = new Sequelize('database', 'username', 'password', {
 });
 
 //==
-const Company = sequelize.define('company', {
-  name: Sequelize.STRING,
-  address: Sequelize.STRING,
-  nip: Sequelize.STRING,
-  regon: Sequelize.STRING,
-  phoneNumber: Sequelize.STRING,
+const User = sequelize.define('user', {
+  username: Sequelize.STRING,
+  password: Sequelize.STRING,
   email: Sequelize.STRING,
 });
 
 sequelize.sync();
 
-router.get('/', function(req, res, next) {
-  Company.findAll().then(companies => res.json(companies));
-});
 
-router.post('/', function (req, res) {
-  const newCompany = req.body;
-  Company.create(newCompany)
-  .then((newCompany) => res.status(200).json(newCompany));
-})
+router.post('/', function(req, res, next) {
+  const newUser = req.body;
+  console.log(newUser);
+  newUser.password = passwordHash.generate(newUser.password);
+  console.log(newUser);
+  User.create(newUser)
+  .then((newUser) => res.status(200).json(newUser));
+});
 
 module.exports = router;

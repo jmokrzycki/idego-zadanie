@@ -7,26 +7,6 @@ import Signup from './Signup';
 import Companies from './Companies';
 import Users from './Users';
 
-
-const PrivateRoute = ({ component: Component, ...rest }) => (
-  <Route
-    {...rest}
-    render={props =>
-      false ? (
-        <Component {...props} />
-      ) : (
-        <Redirect
-          to={{
-            pathname: "/login",
-            state: { from: props.location }
-          }}
-        />
-      )
-    }
-  />
-);
-
-
 export default () => (
 <div>
 
@@ -35,17 +15,18 @@ export default () => (
     <Route exact path='/login' component={Login}/>
     <Route exact path='/signup' component={Signup}/>
     <Route exact path='/companies' component={Companies}/>
-    <PrivateRoute exact path='/users' component={Users}/>
-
-
+    <Route exact path='/users' component={Users}/>
 
     <div>
+    <Link to="/login">Login</Link>
+    <br />
     <Link to="/signup">Signup</Link>
     <br />
     <Link to="/users">Users</Link>
     <br />
     <Link to="/companies">Companies</Link>
     </div>
+
   </div>
 </Router>
 

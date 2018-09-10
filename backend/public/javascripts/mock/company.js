@@ -1,7 +1,6 @@
 
 /*
-sequelize.sync()
-  .then(() => Company.create (
+Company.create (
     {
     name: 'Intel',
     address: 'wladyslawa 14 Warszawa 89-123',
@@ -29,4 +28,14 @@ sequelize.sync()
   .then(company => {
     console.log(company.toJSON());
   });
+*/
+
+
+/*
+User.create (
+    {
+    username: 'admin',
+    password: 'admin',
+    email: 'admin@admin.pl',
+  }))
 */

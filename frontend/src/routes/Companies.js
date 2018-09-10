@@ -1,9 +1,23 @@
 import React, { Component } from 'react';
+//react-material
+import Button from '@material-ui/core/Button';
+import TextField from '@material-ui/core/TextField';
+import Dialog from '@material-ui/core/Dialog';
+import DialogActions from '@material-ui/core/DialogActions';
+import DialogContent from '@material-ui/core/DialogContent';
+import DialogContentText from '@material-ui/core/DialogContentText';
+import DialogTitle from '@material-ui/core/DialogTitle';
+//authorisation
+import AuthService from './AuthService';
+import withAuth from './withAuth';
+
+const Auth = new AuthService();
 
 class Companies extends Component {
-  constructor() {
-    super();
+  constructor(props) {
+    super(props);
     this.state = {
+      open: false,
       newCompanyName: "",
       newCompanyAddress: "",
       newCompanyNip: "",
@@ -45,42 +59,62 @@ class Companies extends Component {
         {companies: [
           ...this.state.companies,
           newCompany
-        ]}));
+        ]}))
+      .then(this.setState({ open: false }))
+      .then(this.handleClose())
   }
 
   handleInputChange(event) {
-    const value = event.target.value;
-    const name = event.target.name;
-
     this.setState({
-      [name]: value
+      [event.target.name]: event.target.value
     });
   }
+
+  handleClickOpen = () => {
+    this.setState({ open: true });
+  };
+
+  handleClose = () => {
+    this.setState({ open: false });
+  };
 
   render() {
     return (
       <div className="Companies">
-      <form onSubmit={this.handleAddCompany}>
-              <label htmlFor="newCompanyName">Name</label>
-              <input name="newCompanyName" type="text" onChange={this.handleInputChange}/>
-              <br />
-              <label htmlFor="newCompanyAddress">Address</label>
-              <input name="newCompanyAddress" type="text" onChange={this.handleInputChange}/>
-              <br />
-              <label htmlFor="newCompanyNip">NIP</label>
-              <input name="newCompanyNip" type="text" onChange={this.handleInputChange}/>
-              <br />
-              <label htmlFor="newCompanyRegon">REGON</label>
-              <input name="newCompanyRegon" type="text" onChange={this.handleInputChange}/>
-              <br />
-              <label htmlFor="newCompanyPhoneNumber">Phone number</label>
-              <input name="newCompanyPhoneNumber" type="text" onChange={this.handleInputChange}/>
-              <br />
-              <label htmlFor="newCompanyEmail">Email</label>
-              <input name="newCompanyEmail" type="text" onChange={this.handleInputChange}/>
-              <br />
-              <button>Send data!</button>
-            </form>
+
+      <Button onClick={this.handleClickOpen}>Add company</Button>
+              <Dialog
+                open={this.state.open}
+                onClose={this.handleClose}
+                aria-labelledby="form-dialog-title"
+              >
+                <DialogTitle id="form-dialog-title">Add company</DialogTitle>
+                <DialogContent>
+                  <DialogContentText>
+                    To subscribe to this website, please enter your email address here. We will send
+                    updates occasionally.
+                  </DialogContentText>
+
+                  <form onSubmit={this.handleAddCompany}>
+                     <TextField margin="dense" label="Company name" name="newCompanyName" type="text" fullWidth onChange={this.handleInputChange}/>
+                     <TextField margin="dense" label="Company address" name="newCompanyAddress" type="text" fullWidth onChange={this.handleInputChange}/>
+                     <TextField margin="dense" label="NIP" name="newCompanyNip" type="text" fullWidth onChange={this.handleInputChange}/>
+                     <TextField margin="dense" label="REGON" name="newCompanyRegon" type="text" fullWidth onChange={this.handleInputChange}/>
+                     <TextField margin="dense" label="Phone number" name="newCompanyPhoneNumber" type="text" fullWidth onChange={this.handleInputChange}/>
+                     <TextField margin="dense" label="Email" name="newCompanyEmail" type="text" fullWidth onChange={this.handleInputChange}/>
+                  </form>
+                </DialogContent>
+                <DialogActions>
+                  <Button onClick={this.handleClose} color="primary">
+                    Cancel
+                  </Button>
+                  <Button onClick={this.handleAddCompany} color="primary">
+                    Add company
+                  </Button>
+                </DialogActions>
+      </Dialog>
+
+
 
       <table className="data-table">
         <tbody>
@@ -109,4 +143,4 @@ class Companies extends Component {
   }
 }
 
-export default Companies;
+export default withAuth(Companies);
