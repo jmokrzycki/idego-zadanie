@@ -3,6 +3,8 @@ var router = express.Router();
 
 const jwt = require('jsonwebtoken');
 
+const passwordHash = require('password-hash');
+
 //==
 const Sequelize = require('sequelize');
 const sequelize = new Sequelize('database', 'username', 'password', {
@@ -32,20 +34,17 @@ const User = sequelize.define('user', {
 
 sequelize.sync();
 
-
 router.post('/', function(req, res, next) {
-  // And insert something like this instead:
   const username = req.body.username;
   const password = req.body.password;
-
   User.findOne({
     where: {
       username: username,
-      password: password,
     }
 }
 ).then(user => {
-  if(user){
+  const passwordMatch = passwordHash.verify(password, user.password);
+  if(user && passwordMatch){
     let token = jwt.sign({ id: user.id, username: username }, 'keyboard cat 4 ever', { expiresIn: 129600 }); // Sigining the token
     res.json({
         sucess: true,

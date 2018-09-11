@@ -8,6 +8,10 @@ import DialogContent from '@material-ui/core/DialogContent';
 import DialogContentText from '@material-ui/core/DialogContentText';
 import DialogTitle from '@material-ui/core/DialogTitle';
 
+//authorisation
+import AuthService from './AuthService';
+import withAuth from './withAuth';
+
 class Users extends Component {
   constructor(props) {
     super(props);
@@ -21,7 +25,7 @@ class Users extends Component {
     }
 
     this.handleInputChange = this.handleInputChange.bind(this);
-    this.handleAddCompany = this.handleAddCompany.bind(this);
+    this.handleEditUser = this.handleEditUser.bind(this);
     this.handleClickOpen = this.handleClickOpen.bind(this);
   }
 
@@ -31,27 +35,33 @@ class Users extends Component {
     .then(users => this.setState({ users }));
   }
 
-  handleAddCompany(event) {
+  handleEditUser(event) {
     event.preventDefault();
 
     fetch('/users', {
-      method: 'POST',
+      method: 'PATCH',
       headers: {
         'Accept': 'application/json',
         'Content-Type': 'application/json'
       },
       body: JSON.stringify({
-        "name": this.state.newCompanyName,
-        "address": this.state.newCompanyAddress,
-        "nip": this.state.newCompanyNip,
-        "regon": this.state.newCompanyRegon,
-        "phoneNumber": this.state.newCompanyPhoneNumber,
-        "email": this.state.newCompanyEmail,
+        "id": this.state.selectedUserId,
+        "username": this.state.selectedUserUsername,
+        "password": this.state.selectedUserPassword,
+        "email": this.state.selectedUserEmail,
       })
-    }).then(res => res.json()).then(newCompany => this.setState({users:
-       [...this.state.users,
-         newCompany
-      ]}));
+    })
+    .then(res => res.json())
+    .then(() => {
+        const newArray = JSON.parse(JSON.stringify(this.state.users))
+        newArray.map(user => {
+        if(user.id == this.state.selectedUserId) {
+          user.username = this.state.selectedUserUsername;
+          user.email = this.state.selectedUserEmail;
+        }});
+        this.setState({users: newArray});
+      })
+    .then(this.handleClose());;
   }
 
   handleInputChange(event) {
@@ -66,8 +76,8 @@ class Users extends Component {
       return user.id == idUser;
     });
     this.setState({
+      selectedUserId: idUser,
       selectedUserUsername: selectedUser.username,
-      selectedUserPassword: selectedUser.password,
       selectedUserEmail: selectedUser.email,
     }, () =>  this.setState({open: true}));
   };
@@ -85,13 +95,11 @@ class Users extends Component {
         <tbody>
           <tr>
             <th>Username</th>
-            <th>Password</th>
             <th>Email</th>
           </tr>
           {this.state.users.map(user =>
             <tr key={user.id}>
               <td>{user.username}</td>
-              <td>{user.password}</td>
               <td>{user.email}</td>
               <td><button value={user.id} onClick={this.handleClickOpen}>Edit</button></td>
             </tr>
@@ -99,27 +107,24 @@ class Users extends Component {
          </tbody>
         </table>
 
-
-
 <Dialog
   open={this.state.open}
   onClose={this.handleClose}
-  aria-labelledby="form-dialog-title"
->
+  aria-labelledby="form-dialog-title">
   <DialogTitle id="form-dialog-title">Edit user</DialogTitle>
   <DialogContent>
     <form onSubmit={this.handleAddCompany}>
-       <TextField margin="dense" label="Username" name="selectedUserUsername" type="text" value={this.state.selectedUserUsername} fullWidth onChange={this.handleInputChange}/>
-       <TextField margin="dense" label="Password" name="selectedUserPassword" type="password" value={this.state.selectedUserPassword} fullWidth onChange={this.handleInputChange}/>
-       <TextField margin="dense" label="Email" name="selectedUserPassword" type="text" value={this.state.selectedUserEmail} fullWidth onChange={this.handleInputChange}/>
+       <TextField margin="dense" label="Username" name="selectedUserUsername" type="text" value={this.state.selectedUserUsername} onChange={this.handleInputChange}/>
+       <TextField margin="dense" label="New password (if needed, otherwise leave it blank)" name="selectedUserPassword" type="password" fullWidth onChange={this.handleInputChange}/>
+       <TextField margin="dense" label="Email" name="selectedUserEmail" type="text" value={this.state.selectedUserEmail} onChange={this.handleInputChange}/>
     </form>
   </DialogContent>
   <DialogActions>
     <Button onClick={this.handleClose} color="primary">
       Cancel
     </Button>
-    <Button onClick={this.handleClose} color="primary">
-      Subscribe
+    <Button onClick={this.handleEditUser} color="primary">
+      UPDATE
     </Button>
   </DialogActions>
 </Dialog>
@@ -128,4 +133,4 @@ class Users extends Component {
   }
 }
 
-export default Users;
+export default withAuth(Users);

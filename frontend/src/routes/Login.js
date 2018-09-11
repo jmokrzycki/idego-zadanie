@@ -1,6 +1,15 @@
 import React, { Component } from 'react';
 import AuthService from './AuthService';
 
+import { BrowserRouter as Router, Route, Link, Redirect } from 'react-router-dom';
+import { Switch } from 'react-router-dom';
+
+//react-material
+import Button from '@material-ui/core/Button';
+import TextField from '@material-ui/core/TextField';
+
+import Companies from './Companies';
+
 class Login extends React.Component {
   constructor(props){
     super(props);
@@ -16,30 +25,27 @@ class Login extends React.Component {
     this.Auth = new AuthService();
   }
 
-handleLogin(event) {
-  event.preventDefault();
+  handleLogin(event) {
+    event.preventDefault();
+    this.Auth.login(this.state.username,this.state.password)
+        .then(res =>{
+           this.props.history.replace('/companies');
+        })
+        .catch(err =>{
+            alert(err);
+        })
+  }
 
-  this.Auth.login(this.state.username,this.state.password)
-      .then(res =>{
-         this.props.history.replace('/');
-      })
-      .catch(err =>{
-          alert(err);
-      })
-}
+  handleLogout(){
+    this.Auth.logout();
+  }
 
-handleLogout(){
-  this.Auth.logout();
-}
-
-handleInputChange(event) {
-  console.log(this)
-  this.setState({
-    [event.target.name]: event.target.value
-  });
-}
-
-
+  handleInputChange(event) {
+    console.log(this)
+    this.setState({
+      [event.target.name]: event.target.value
+    });
+  }
 
   render() {
     if(!this.Auth.loggedIn()){
@@ -47,19 +53,20 @@ handleInputChange(event) {
         <div>
           <form onSubmit={this.handleLogin}>
             <label htmlFor="username">Login</label>
-            <input id="username" name="username" type="text" onChange={this.handleInputChange}/>
-            <br />
-            <label htmlFor="password">Password</label>
-            <input id="password" name="password" type="text" onChange={this.handleInputChange}/>
-            <br />
-            <button>Send data!</button>
+            <TextField margin="dense" label="Username" name="username" type="text" fullWidth onChange={this.handleInputChange}/>
+            <TextField margin="dense" label="Password" name="password" type="text" fullWidth onChange={this.handleInputChange}/>
+            <Button onClick={this.handleLogin}>Login</Button>
           </form>
         </div>
       );
     } else {
-      return <button onClick={this.handleLogout}>Logout</button>;
-    }
-  }
+        return(
+          <div>
+            Logged!
+          </div>);
+        }
+      }
+
 }
 
 export default Login;

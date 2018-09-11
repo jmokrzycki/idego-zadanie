@@ -37,12 +37,12 @@ router.get('/', function(req, res, next) {
 });
 
 router.patch('/', function (req, res) {
-  const newCompany = req.body;
-  User.update(newCompany)
-  .then((newCompany) =>
-  {
-    res.status(200).json(newCompany)
-  });
+  const user = req.body;
+  User.update(
+    { username: user.username, password: user.password, email: user.email },
+    { where: { id: user.id }}
+  )
+  .then((updatedUser) => res.status(200).json(updatedUser));
 })
 
 module.exports = router;
