@@ -1,6 +1,4 @@
-import React, {
-  Component
-} from 'react';
+import React, { Component } from "react";
 
 class Signup extends React.Component {
   constructor(props) {
@@ -9,7 +7,7 @@ class Signup extends React.Component {
     this.state = {
       username: "",
       password: "",
-      email: "",
+      email: ""
     };
 
     this.handleInputChange = this.handleInputChange.bind(this);
@@ -19,16 +17,16 @@ class Signup extends React.Component {
   handleSignup(event) {
     event.preventDefault();
 
-    fetch('/signup', {
-      method: 'POST',
+    fetch("/signup", {
+      method: "POST",
       headers: {
-        'Accept': 'application/json',
-        'Content-Type': 'application/json'
+        Accept: "application/json",
+        "Content-Type": "application/json"
       },
       body: JSON.stringify({
-        "username": this.state.username,
-        "password": this.state.password,
-        "email": this.state.email,
+        username: this.state.username,
+        password: this.state.password,
+        email: this.state.email
       })
     });
   }
@@ -39,40 +37,37 @@ class Signup extends React.Component {
     });
   }
 
-
   render() {
-    return ( <div>
-      <form onSubmit={this.handleSignup}>
-      <label htmlFor="username">Login</label> <input id = "username"
-      name = "username"
-      type = "text"
-      onChange = {
-        this.handleInputChange
-      }      /> <
-      br / >
-      <
-      label htmlFor = "password" > Password < /label> <
-      input id = "password"
-      name = "password"
-      type = "text"
-      onChange = {
-        this.handleInputChange
-      }
-      /> <
-      br / >
-      <
-      label htmlFor = "email" > Email < /label> <
-      input id = "email"
-      name = "email"
-      type = "text"
-      onChange = {
-        this.handleInputChange
-      }
-      /> <br / >
-      <
-      button > Send data! < /button> <
-      /form> <
-      /div>
+    return (
+      <div>
+        <form onSubmit={this.handleSignup}>
+          <label htmlFor="username">Login</label>{" "}
+          <input
+            id="username"
+            name="username"
+            type="text"
+            onChange={this.handleInputChange}
+          />{" "}
+          <br />
+          <label htmlFor="password"> Password </label>{" "}
+          <input
+            id="password"
+            name="password"
+            type="text"
+            onChange={this.handleInputChange}
+          />{" "}
+          <br />
+          <label htmlFor="email"> Email </label>{" "}
+          <input
+            id="email"
+            name="email"
+            type="text"
+            onChange={this.handleInputChange}
+          />{" "}
+          <br />
+          <button> Send data! </button>{" "}
+        </form>{" "}
+      </div>
     );
   }
 }

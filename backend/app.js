@@ -1,49 +1,41 @@
-var createError = require('http-errors');
-var express = require('express');
-var path = require('path');
-var cookieParser = require('cookie-parser');
-var logger = require('morgan');
+const createError = require('http-errors');
+const express = require('express');
+const path = require('path');
+const cookieParser = require('cookie-parser');
+const logger = require('morgan');
 
-var indexRouter = require('./routes/index');
-var loginRouter = require('./routes/login');
-var signupRouter = require('./routes/signup');
-var companiesRouter = require('./routes/companies');
-var usersRouter = require('./routes/users');
+const indexRouter = require('./routes/index');
+const loginRouter = require('./routes/login');
+const signupRouter = require('./routes/signup');
+const companiesRouter = require('./routes/companies');
+const usersRouter = require('./routes/users');
 
 const bodyParser = require('body-parser');
 
 const exjwt = require('express-jwt');
 
-var app = express();
+const app = express();
 
 // See the react auth blog in which cors is required for access
 app.use((req, res, next) => {
-    res.setHeader('Access-Control-Allow-Origin', 'http://localhost:3000');
-    res.setHeader('Access-Control-Allow-Headers', 'Content-type,Authorization');
-    next();
+  res.setHeader('Access-Control-Allow-Origin', 'http://localhost:3000');
+  res.setHeader('Access-Control-Allow-Headers', 'Content-type,Authorization');
+  next();
 });
 
 // Setting up bodyParser to use json and set it to req.body
 app.use(bodyParser.json());
-app.use(bodyParser.urlencoded({ extended: true }));
-
-// INstantiating the express-jwt middleware
-const jwtMW = exjwt({
-    secret: 'keyboard cat 4 ever'
-});
-
-app.get('/', jwtMW /* Using the express jwt MW here */, (req, res) => {
-    res.send('You are authenticated'); //Sending some response when authenticated
-});
+app.use(bodyParser.urlencoded({
+  extended: true
+}));
 
 // Error handling
-app.use(function (err, req, res, next) {
-    if (err.name === 'UnauthorizedError') { // Send the error rather than to show it on the console
-        res.status(401).send(err);
-    }
-    else {
-        next(err);
-    }
+app.use(function(err, req, res, next) {
+  if (err.name === 'UnauthorizedError') { // Send the error rather than to show it on the console
+    res.status(401).send(err);
+  } else {
+    next(err);
+  }
 });
 
 // view engine setup
@@ -52,7 +44,9 @@ app.set('view engine', 'jade');
 
 app.use(logger('dev'));
 app.use(express.json());
-app.use(express.urlencoded({ extended: false }));
+app.use(express.urlencoded({
+  extended: false
+}));
 app.use(cookieParser());
 app.use(express.static(path.join(__dirname, 'public')));
 
