@@ -8,9 +8,16 @@ import DialogContent from "@material-ui/core/DialogContent";
 import DialogContentText from "@material-ui/core/DialogContentText";
 import DialogTitle from "@material-ui/core/DialogTitle";
 
+import { withStyles } from "@material-ui/core/styles";
+import Table from "@material-ui/core/Table";
+import TableBody from "@material-ui/core/TableBody";
+import TableCell from "@material-ui/core/TableCell";
+import TableHead from "@material-ui/core/TableHead";
+import TableRow from "@material-ui/core/TableRow";
+import Paper from "@material-ui/core/Paper";
+
 //authorisation
-import AuthService from "./AuthService";
-import withAuth from "./withAuth";
+import withAuth from "../helpers/withAuth";
 
 class Users extends Component {
   constructor(props) {
@@ -100,16 +107,13 @@ class Users extends Component {
     })
       .then(res => res.json())
       .then(() => {
-        console.log(this.state.users);
         const newArray = JSON.parse(JSON.stringify(this.state.users));
         let deletedElementIndex = newArray.findIndex(
           (element, index, array) => {
             return element.id == idUser;
           }
         );
-        console.log("aaaa");
         newArray.splice(deletedElementIndex, 1);
-        console.log(newArray);
         this.setState({ users: newArray });
       })
       .then(this.handleClose());
@@ -123,30 +127,43 @@ class Users extends Component {
     return (
       <div className="Users">
         USERS MANAGEMENT
-        <table className="data-table">
-          <tbody>
-            <tr>
-              <th>Username</th>
-              <th>Email</th>
-            </tr>
-            {this.state.users.map(user => (
-              <tr key={user.id}>
-                <td>{user.username}</td>
-                <td>{user.email}</td>
-                <td>
-                  <button value={user.id} onClick={this.handleClickOpenEdit}>
-                    Edit
-                  </button>
-                </td>
-                <td>
-                  <button value={user.id} onClick={this.handleClickDelete}>
-                    Delete
-                  </button>
-                </td>
-              </tr>
-            ))}
-          </tbody>
-        </table>
+        <Paper>
+          <Table>
+            <TableHead>
+              <TableRow>
+                <TableCell numeric>Username</TableCell>
+                <TableCell numeric>Email</TableCell>
+                <TableCell numeric />
+                <TableCell numeric />
+              </TableRow>
+            </TableHead>
+            <TableBody>
+              {this.state.users.map(user => {
+                return (
+                  <TableRow key={user.id}>
+                    <TableCell numeric>{user.username}</TableCell>
+                    <TableCell numeric>{user.email}</TableCell>
+                    <TableCell numeric>
+                      {" "}
+                      <button
+                        value={user.id}
+                        onClick={this.handleClickOpenEdit}
+                      >
+                        Edit
+                      </button>
+                    </TableCell>
+                    <TableCell numeric>
+                      {" "}
+                      <button value={user.id} onClick={this.handleClickDelete}>
+                        Delete
+                      </button>
+                    </TableCell>
+                  </TableRow>
+                );
+              })}
+            </TableBody>
+          </Table>
+        </Paper>
         <Dialog
           open={this.state.open}
           onClose={this.handleClose}

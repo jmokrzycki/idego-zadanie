@@ -1,11 +1,10 @@
-var express = require('express');
-var router = express.Router();
+const express = require('express');
+const router = express.Router();
 const sequelize = require('../helpers/dbSetup');
 const User = require('../models/users');
 
 router.get('/', function(req, res, next) {
   User.findAll()
-  //.then( users.map( user => ({username: user.username, password: })))
   .then(users => res.json(users));
 });
 
@@ -23,6 +22,6 @@ router.patch('/', function (req, res) {
     { where: { id: user.id }}
   )
   .then((updatedUser) => res.status(200).json(updatedUser));
-})
+});
 
 module.exports = router;

@@ -16,8 +16,8 @@ import TableHead from "@material-ui/core/TableHead";
 import TableRow from "@material-ui/core/TableRow";
 import Paper from "@material-ui/core/Paper";
 //authorisation
-import AuthService from "./AuthService";
-import withAuth from "./withAuth";
+import AuthService from "../helpers/AuthService";
+import withAuth from "../helpers/withAuth";
 
 const Auth = new AuthService();
 
@@ -158,55 +158,34 @@ class Companies extends Component {
           </DialogActions>
         </Dialog>
 
-        <table className="data-table">
-          <tbody>
-            <tr>
-              <th>Name</th>
-              <th>Adress</th>
-              <th>NIP</th>
-              <th>REGON</th>
-              <th>Phone number</th>
-              <th>Email</th>
-            </tr>
-            {this.state.companies.map(company => (
-              <tr key={company.id}>
-                <td>{company.name}</td>
-                <td>{company.address}</td>
-                <td>{company.nip}</td>
-                <td>{company.regon}</td>
-                <td>{company.phoneNumber}</td>
-                <td>{company.email}</td>
-              </tr>
-            ))}
-          </tbody>
-        </table>
-
-        <Table>
-          <TableHead>
-            <TableRow>
-              <TableCell>Name</TableCell>
-              <TableCell numeric>Address</TableCell>
-              <TableCell numeric>NIP</TableCell>
-              <TableCell numeric>REGON</TableCell>
-              <TableCell numeric>Phone number</TableCell>
-              <TableCell numeric>Email</TableCell>
-            </TableRow>
-          </TableHead>
-          <TableBody>
-            {this.state.companies.map(company => {
-              return (
-                <TableRow key={company.id}>
-                  <td>{company.name}</td>
-                  <td>{company.address}</td>
-                  <td>{company.nip}</td>
-                  <td>{company.regon}</td>
-                  <td>{company.phoneNumber}</td>
-                  <td>{company.email}</td>
-                </TableRow>
-              );
-            })}
-          </TableBody>
-        </Table>
+        <Paper>
+          <Table>
+            <TableHead>
+              <TableRow>
+                <TableCell>Name</TableCell>
+                <TableCell numeric>Address</TableCell>
+                <TableCell numeric>NIP</TableCell>
+                <TableCell numeric>REGON</TableCell>
+                <TableCell numeric>Phone number</TableCell>
+                <TableCell numeric>Email</TableCell>
+              </TableRow>
+            </TableHead>
+            <TableBody>
+              {this.state.companies.map(company => {
+                return (
+                  <TableRow key={company.id}>
+                    <TableCell numeric>{company.name}</TableCell>
+                    <TableCell numeric>{company.address}</TableCell>
+                    <TableCell numeric>{company.nip}</TableCell>
+                    <TableCell numeric>{company.regon}</TableCell>
+                    <TableCell numeric>{company.phoneNumber}</TableCell>
+                    <TableCell numeric>{company.email}</TableCell>
+                  </TableRow>
+                );
+              })}
+            </TableBody>
+          </Table>
+        </Paper>
       </div>
     );
   }

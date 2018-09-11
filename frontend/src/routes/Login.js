@@ -1,5 +1,5 @@
 import React, { Component } from "react";
-import AuthService from "./AuthService";
+import AuthService from "../helpers/AuthService";
 
 import {
   BrowserRouter as Router,
@@ -46,7 +46,6 @@ class Login extends React.Component {
   }
 
   handleInputChange(event) {
-    console.log(this);
     this.setState({
       [event.target.name]: event.target.value
     });
@@ -55,25 +54,24 @@ class Login extends React.Component {
   render() {
     if (!this.Auth.loggedIn()) {
       return (
-        <div>
+        <div className="loginContainer">
           <form onSubmit={this.handleLogin}>
-            <label htmlFor="username">Login</label>
             <TextField
               margin="dense"
               label="Username"
               name="username"
               type="text"
-              fullWidth
               onChange={this.handleInputChange}
             />
+            <br />
             <TextField
               margin="dense"
               label="Password"
               name="password"
-              type="text"
-              fullWidth
+              type="password"
               onChange={this.handleInputChange}
             />
+            <br />
             <Button onClick={this.handleLogin}>Login</Button>
           </form>
         </div>
