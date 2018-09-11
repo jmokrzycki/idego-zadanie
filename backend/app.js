@@ -32,24 +32,6 @@ const jwtMW = exjwt({
     secret: 'keyboard cat 4 ever'
 });
 
-// MOCKING DB just for test
-let users = [
-    {
-        id: 1,
-        username: 'test',
-        password: 'asdf123'
-    },
-    {
-        id: 2,
-        username: 'test2',
-        password: 'asdf12345'
-    }
-];
-
-// LOGIN ROUTE
-
-
-
 app.get('/', jwtMW /* Using the express jwt MW here */, (req, res) => {
     res.send('You are authenticated'); //Sending some response when authenticated
 });

@@ -36,6 +36,13 @@ router.get('/', function(req, res, next) {
   .then(users => res.json(users));
 });
 
+router.delete('/', function(req, res, next) {
+  User.destroy({
+    where: { id: req.body.id }
+  })
+  .then((deletedUser) => res.status(200).json(deletedUser));
+});
+
 router.patch('/', function (req, res) {
   const user = req.body;
   User.update(

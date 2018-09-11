@@ -26,7 +26,8 @@ class Users extends Component {
 
     this.handleInputChange = this.handleInputChange.bind(this);
     this.handleEditUser = this.handleEditUser.bind(this);
-    this.handleClickOpen = this.handleClickOpen.bind(this);
+    this.handleClickOpenEdit = this.handleClickOpenEdit.bind(this);
+    this.handleClickDelete = this.handleClickDelete.bind(this);
   }
 
   componentDidMount(res) {
@@ -37,7 +38,6 @@ class Users extends Component {
 
   handleEditUser(event) {
     event.preventDefault();
-
     fetch('/users', {
       method: 'PATCH',
       headers: {
@@ -61,7 +61,7 @@ class Users extends Component {
         }});
         this.setState({users: newArray});
       })
-    .then(this.handleClose());;
+    .then(this.handleClose());
   }
 
   handleInputChange(event) {
@@ -70,7 +70,7 @@ class Users extends Component {
     });
   }
 
-  handleClickOpen(event){
+  handleClickOpenEdit(event){
     const idUser = event.target.value;
     const selectedUser = this.state.users.find( user => {
       return user.id == idUser;
@@ -81,6 +81,34 @@ class Users extends Component {
       selectedUserEmail: selectedUser.email,
     }, () =>  this.setState({open: true}));
   };
+
+  handleClickDelete(event){
+    const idUser = event.target.value;
+    fetch('/users', {
+      method: 'DELETE',
+      headers: {
+        'Accept': 'application/json',
+        'Content-Type': 'application/json'
+      },
+      body: JSON.stringify({
+        "id": idUser,
+      })
+    })
+    .then(res => res.json())
+    .then(() => {
+        console.log(this.state.users);
+        const newArray = JSON.parse(JSON.stringify(this.state.users))
+        let deletedElementIndex = newArray.findIndex((element, index, array) => {
+          return element.id == idUser;
+        });
+        console.log('aaaa');
+        newArray.splice(deletedElementIndex, 1);
+        console.log(newArray);
+        this.setState({ users: newArray});
+
+    })
+    .then(this.handleClose());
+  }
 
   handleClose = () => {
     this.setState({ open: false });
@@ -101,7 +129,8 @@ class Users extends Component {
             <tr key={user.id}>
               <td>{user.username}</td>
               <td>{user.email}</td>
-              <td><button value={user.id} onClick={this.handleClickOpen}>Edit</button></td>
+              <td><button value={user.id} onClick={this.handleClickOpenEdit}>Edit</button></td>
+              <td><button value={user.id} onClick={this.handleClickDelete}>Delete</button></td>
             </tr>
           )}
          </tbody>
