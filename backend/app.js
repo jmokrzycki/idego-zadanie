@@ -16,6 +16,9 @@ const exjwt = require('express-jwt');
 
 const app = express();
 
+//mock
+require('./mock/usersMock');
+
 // See the react auth blog in which cors is required for access
 app.use((req, res, next) => {
   res.setHeader('Access-Control-Allow-Origin', 'http://localhost:3000');

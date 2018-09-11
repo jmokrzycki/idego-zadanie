@@ -1,21 +1,11 @@
 import React, { Component } from "react";
 import AuthService from "../helpers/AuthService";
 
-import {
-  BrowserRouter as Router,
-  Route,
-  Link,
-  Redirect
-} from "react-router-dom";
-import { Switch } from "react-router-dom";
-
 //react-material
 import Button from "@material-ui/core/Button";
 import TextField from "@material-ui/core/TextField";
 
-import Companies from "./Companies";
-
-class Login extends React.Component {
+class Login extends Component {
   constructor(props) {
     super(props);
     this.state = {
