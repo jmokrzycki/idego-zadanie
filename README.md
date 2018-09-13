@@ -1,9 +1,11 @@
 # idego-zadanie
 
-frontend wlaczyc komenda:
+frontend wlaczyc komendami:
+npm install  
 npm start
 
-backend wlaczyc komenda:
+backend wlaczyc komendami:
+npm install
 npm start
 
 baza sama sie utworzy, dodatkowo doda sie konto admina (login: admin, hasło: admin)
