@@ -18,6 +18,6 @@ react-material
 react-router-dom (routing)  
 
 backend:  
-Sequelize (orm, uzyty to obslugi sqlite3)  
+Sequelize (orm, uzyty do obslugi sqlite3)  
 jsonwebtoken (autoryzacja oparta na tokenach)  
-password-hash (hashowanie hasla)  
+password-hash (hashowanie hasla, i trzymanie w zabezpieczonej formie w bazie)  
