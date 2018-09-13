@@ -163,7 +163,7 @@ class Users extends Component {
           onClose={this.handleCloseAddUser}
           aria-labelledby="form-dialog-title"
         >
-          <DialogTitle id="form-dialog-title">Edit user</DialogTitle>
+          <DialogTitle id="form-dialog-title">Add user</DialogTitle>
           <DialogContent>
             <form>
               <TextField
@@ -246,6 +246,7 @@ class Users extends Component {
                 label="Username"
                 name="selectedUserUsername"
                 type="text"
+                fullWidth
                 value={this.state.selectedUserUsername}
                 onChange={this.handleInputChange}
               />
@@ -262,6 +263,7 @@ class Users extends Component {
                 label="Email"
                 name="selectedUserEmail"
                 type="email"
+                fullWidth
                 value={this.state.selectedUserEmail}
                 onChange={this.handleInputChange}
               />

@@ -11,7 +11,7 @@ const usersRouter = require('./routes/users');
 
 const app = express();
 
-require('./mock/users');
+require('./helpers/mock/users');
 
 app.use(logger('dev'));
 app.use(express.json());
