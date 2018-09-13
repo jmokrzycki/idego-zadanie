@@ -1,8 +1,7 @@
 import React, { Component } from "react";
 import AuthService from "../helpers/AuthService";
-
-//react-material
 import Button from "@material-ui/core/Button";
+import Paper from "@material-ui/core/Paper";
 import TextField from "@material-ui/core/TextField";
 
 class Login extends Component {
@@ -44,26 +43,30 @@ class Login extends Component {
   render() {
     if (!this.Auth.loggedIn()) {
       return (
-        <div className="loginContainer">
-          <form onSubmit={this.handleLogin}>
-            <TextField
-              margin="dense"
-              label="Username"
-              name="username"
-              type="text"
-              onChange={this.handleInputChange}
-            />
-            <br />
-            <TextField
-              margin="dense"
-              label="Password"
-              name="password"
-              type="password"
-              onChange={this.handleInputChange}
-            />
-            <br />
-            <Button onClick={this.handleLogin}>Login</Button>
-          </form>
+        <div>
+          <Paper className="loginContainer">
+            <form onSubmit={this.handleLogin}>
+              <TextField
+                margin="dense"
+                label="Username"
+                name="username"
+                type="text"
+                onChange={this.handleInputChange}
+              />
+              <br />
+              <TextField
+                margin="dense"
+                label="Password"
+                name="password"
+                type="password"
+                onChange={this.handleInputChange}
+              />
+              <br />
+              <Button className="loginButton" onClick={this.handleLogin}>
+                Login
+              </Button>
+            </form>
+          </Paper>
         </div>
       );
     } else {

@@ -1,26 +1,23 @@
 import React, { Component } from "react";
-//react-material
 import Button from "@material-ui/core/Button";
 import TextField from "@material-ui/core/TextField";
 import Dialog from "@material-ui/core/Dialog";
 import DialogActions from "@material-ui/core/DialogActions";
 import DialogContent from "@material-ui/core/DialogContent";
 import DialogTitle from "@material-ui/core/DialogTitle";
-
 import Table from "@material-ui/core/Table";
 import TableBody from "@material-ui/core/TableBody";
 import TableCell from "@material-ui/core/TableCell";
 import TableHead from "@material-ui/core/TableHead";
 import TableRow from "@material-ui/core/TableRow";
 import Paper from "@material-ui/core/Paper";
-//authorisation
 import withAuth from "../helpers/withAuth";
 
 class Companies extends Component {
   constructor(props) {
     super(props);
     this.state = {
-      open: false,
+      openAddCompanyDialog: false,
       newCompanyName: "",
       newCompanyAddress: "",
       newCompanyNip: "",
@@ -32,6 +29,8 @@ class Companies extends Component {
 
     this.handleInputChange = this.handleInputChange.bind(this);
     this.handleAddCompany = this.handleAddCompany.bind(this);
+    this.handleOpenAddCompany = this.handleOpenAddCompany.bind(this);
+    this.handleCloseAddCompany = this.handleCloseAddCompany.bind(this);
   }
 
   componentDidMount(res) {
@@ -42,7 +41,6 @@ class Companies extends Component {
 
   handleAddCompany(event) {
     event.preventDefault();
-
     fetch("/companies", {
       method: "POST",
       headers: {
@@ -64,7 +62,7 @@ class Companies extends Component {
           companies: [...this.state.companies, newCompany]
         })
       )
-      .then(this.handleClose());
+      .finally(this.handleCloseAddCompany());
   }
 
   handleInputChange(event) {
@@ -73,21 +71,21 @@ class Companies extends Component {
     });
   }
 
-  handleClickOpen = () => {
-    this.setState({ open: true });
-  };
+  handleOpenAddCompany() {
+    this.setState({ openAddCompanyDialog: true });
+  }
 
-  handleClose = () => {
-    this.setState({ open: false });
-  };
+  handleCloseAddCompany() {
+    this.setState({ openAddCompanyDialog: false });
+  }
 
   render() {
     return (
       <div className="Companies">
-        <Button onClick={this.handleClickOpen}>Add company</Button>
+        <Button onClick={this.handleOpenAddCompany}>Add company</Button>
         <Dialog
-          open={this.state.open}
-          onClose={this.handleClose}
+          open={this.state.openAddCompanyDialog}
+          onClose={this.handleCloseAddCompany}
           aria-labelledby="form-dialog-title"
         >
           <DialogTitle id="form-dialog-title">Add company</DialogTitle>
@@ -144,7 +142,7 @@ class Companies extends Component {
             </form>
           </DialogContent>
           <DialogActions>
-            <Button onClick={this.handleClose} color="primary">
+            <Button onClick={this.handleCloseAddCompany} color="primary">
               Cancel
             </Button>
             <Button onClick={this.handleAddCompany} color="primary">
@@ -152,7 +150,6 @@ class Companies extends Component {
             </Button>
           </DialogActions>
         </Dialog>
-
         <Paper>
           <Table>
             <TableHead>

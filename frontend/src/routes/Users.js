@@ -1,28 +1,24 @@
 import React, { Component } from "react";
-
 import Button from "@material-ui/core/Button";
 import TextField from "@material-ui/core/TextField";
 import Dialog from "@material-ui/core/Dialog";
 import DialogActions from "@material-ui/core/DialogActions";
 import DialogContent from "@material-ui/core/DialogContent";
 import DialogTitle from "@material-ui/core/DialogTitle";
-
 import Table from "@material-ui/core/Table";
 import TableBody from "@material-ui/core/TableBody";
 import TableCell from "@material-ui/core/TableCell";
 import TableHead from "@material-ui/core/TableHead";
 import TableRow from "@material-ui/core/TableRow";
 import Paper from "@material-ui/core/Paper";
-
-//authorisation
 import withAuth from "../helpers/withAuth";
 
 class Users extends Component {
   constructor(props) {
     super(props);
     this.state = {
-      openEditDialog: false,
-      openAddDialog: false,
+      openEditUserDialog: false,
+      openAddUserDialog: false,
       selectedUserId: "",
       selectedUserUsername: "",
       selectedUserPassword: "",
@@ -36,9 +32,11 @@ class Users extends Component {
     this.handleInputChange = this.handleInputChange.bind(this);
     this.handleAddUser = this.handleAddUser.bind(this);
     this.handleEditUser = this.handleEditUser.bind(this);
-    this.handleClickOpenAdd = this.handleClickOpenAdd.bind(this);
-    this.handleClickOpenEdit = this.handleClickOpenEdit.bind(this);
-    this.handleClickDelete = this.handleClickDelete.bind(this);
+    this.handleDeleteUser = this.handleDeleteUser.bind(this);
+    this.handleOpenAddUser = this.handleOpenAddUser.bind(this);
+    this.handleCloseAddUser = this.handleCloseAddUser.bind(this);
+    this.handleOpenEditUser = this.handleOpenEditUser.bind(this);
+    this.handleCloseEditUser = this.handleCloseEditUser.bind(this);
   }
 
   componentDidMount(res) {
@@ -47,28 +45,8 @@ class Users extends Component {
       .then(users => this.setState({ users }));
   }
 
-  handleSignup(event) {
-    event.preventDefault();
-
-    fetch("/signup", {
-      method: "POST",
-      headers: {
-        Accept: "application/json",
-        "Content-Type": "application/json"
-      },
-      body: JSON.stringify({
-        username: this.state.username,
-        password: this.state.password,
-        email: this.state.email
-      })
-    });
-  }
-
   handleAddUser(event) {
     event.preventDefault();
-
-    console.log(this.state);
-
     fetch("/users", {
       method: "POST",
       headers: {
@@ -87,7 +65,7 @@ class Users extends Component {
           users: [...this.state.users, newUser]
         })
       )
-      .then(this.handleCloseAddDialog());
+      .finally(this.handleCloseAddUser());
   }
 
   handleEditUser(event) {
@@ -105,18 +83,17 @@ class Users extends Component {
         email: this.state.selectedUserEmail
       })
     })
-      .then(res => res.json())
       .then(() => {
-        const newArray = JSON.parse(JSON.stringify(this.state.users));
-        newArray.map(user => {
+        const newUsersArray = JSON.parse(JSON.stringify(this.state.users));
+        newUsersArray.map(user => {
           if (user.id == this.state.selectedUserId) {
             user.username = this.state.selectedUserUsername;
             user.email = this.state.selectedUserEmail;
           }
         });
-        this.setState({ users: newArray });
+        this.setState({ users: newUsersArray });
       })
-      .then(this.handleCloseEditDialog());
+      .finally(this.handleCloseEditUser());
   }
 
   handleInputChange(event) {
@@ -125,11 +102,11 @@ class Users extends Component {
     });
   }
 
-  handleClickOpenAdd(event) {
-    this.setState({ openAddDialog: true });
+  handleOpenAddUser() {
+    this.setState({ openAddUserDialog: true });
   }
 
-  handleClickOpenEdit(event) {
+  handleOpenEditUser(event) {
     const idUser = event.target.value;
     const selectedUser = this.state.users.find(user => {
       return user.id == idUser;
@@ -140,11 +117,19 @@ class Users extends Component {
         selectedUserUsername: selectedUser.username,
         selectedUserEmail: selectedUser.email
       },
-      () => this.setState({ openEditDialog: true })
+      () => this.setState({ openEditUserDialog: true })
     );
   }
 
-  handleClickDelete(event) {
+  handleCloseEditUser() {
+    this.setState({ openEditUserDialog: false });
+  }
+
+  handleCloseAddUser() {
+    this.setState({ openAddUserDialog: false });
+  }
+
+  handleDeleteUser(event) {
     const idUser = event.target.value;
     fetch("/users", {
       method: "DELETE",
@@ -156,36 +141,26 @@ class Users extends Component {
         id: idUser
       })
     })
-      .then(res => res.json())
       .then(() => {
-        const newArray = JSON.parse(JSON.stringify(this.state.users));
-        let deletedElementIndex = newArray.findIndex(
+        const newUsersArray = JSON.parse(JSON.stringify(this.state.users));
+        const deletedElementIndex = newUsersArray.findIndex(
           (element, index, array) => {
             return element.id == idUser;
           }
         );
-        newArray.splice(deletedElementIndex, 1);
-        this.setState({ users: newArray });
+        newUsersArray.splice(deletedElementIndex, 1);
+        this.setState({ users: newUsersArray });
       })
-      .then(this.handleCloseEditDialog());
+      .then(this.handleCloseEditUser());
   }
-
-  handleCloseEditDialog = () => {
-    this.setState({ openEditDialog: false });
-  };
-
-  handleCloseAddDialog = () => {
-    this.setState({ openAddDialog: false });
-  };
 
   render() {
     return (
       <div className="Users">
-        <Button onClick={this.handleClickOpenAdd}>Add user</Button>
-
+        <Button onClick={this.handleOpenAddUser}>Add user</Button>
         <Dialog
-          open={this.state.openAddDialog}
-          onClose={this.handleCloseAddDialog}
+          open={this.state.openAddUserDialog}
+          onClose={this.handleCloseAddUser}
           aria-labelledby="form-dialog-title"
         >
           <DialogTitle id="form-dialog-title">Edit user</DialogTitle>
@@ -197,7 +172,6 @@ class Users extends Component {
                 name="newUserUsername"
                 type="text"
                 fullWidth
-                value={this.state.newUserUsername}
                 onChange={this.handleInputChange}
               />
               <TextField
@@ -206,22 +180,20 @@ class Users extends Component {
                 name="newUserPassword"
                 type="password"
                 fullWidth
-                value={this.state.newUserPassword}
                 onChange={this.handleInputChange}
               />
               <TextField
                 margin="dense"
                 label="Email"
                 name="newUserEmail"
-                type="text"
+                type="email"
                 fullWidth
-                value={this.state.newUserEmail}
                 onChange={this.handleInputChange}
               />
             </form>
           </DialogContent>
           <DialogActions>
-            <Button onClick={this.handleCloseAddDialog} color="primary">
+            <Button onClick={this.handleCloseAddUser} color="primary">
               Cancel
             </Button>
             <Button onClick={this.handleAddUser} color="primary">
@@ -229,7 +201,6 @@ class Users extends Component {
             </Button>
           </DialogActions>
         </Dialog>
-
         <Paper>
           <Table>
             <TableHead>
@@ -247,15 +218,12 @@ class Users extends Component {
                     <TableCell numeric>{user.username}</TableCell>
                     <TableCell numeric>{user.email}</TableCell>
                     <TableCell numeric>
-                      <button
-                        value={user.id}
-                        onClick={this.handleClickOpenEdit}
-                      >
+                      <button value={user.id} onClick={this.handleOpenEditUser}>
                         Edit
                       </button>
                     </TableCell>
                     <TableCell numeric>
-                      <button value={user.id} onClick={this.handleClickDelete}>
+                      <button value={user.id} onClick={this.handleDeleteUser}>
                         Delete
                       </button>
                     </TableCell>
@@ -266,8 +234,8 @@ class Users extends Component {
           </Table>
         </Paper>
         <Dialog
-          open={this.state.openEditDialog}
-          onClose={this.handleCloseEditDialog}
+          open={this.state.openEditUserDialog}
+          onClose={this.handleCloseEditUser}
           aria-labelledby="form-dialog-title"
         >
           <DialogTitle id="form-dialog-title">Edit user</DialogTitle>
@@ -293,14 +261,14 @@ class Users extends Component {
                 margin="dense"
                 label="Email"
                 name="selectedUserEmail"
-                type="text"
+                type="email"
                 value={this.state.selectedUserEmail}
                 onChange={this.handleInputChange}
               />
             </form>
           </DialogContent>
           <DialogActions>
-            <Button onClick={this.handleCloseEditDialog} color="primary">
+            <Button onClick={this.handleCloseEditUser} color="primary">
               Cancel
             </Button>
             <Button onClick={this.handleEditUser} color="primary">

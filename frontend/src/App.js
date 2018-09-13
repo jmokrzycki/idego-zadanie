@@ -1,21 +1,18 @@
 import React, { Component } from "react";
 import { BrowserRouter as Router, Route, Link } from "react-router-dom";
-
 import AppBar from "@material-ui/core/AppBar";
 import Toolbar from "@material-ui/core/Toolbar";
-
 import Button from "@material-ui/core/Button";
-
 import AuthService from "./helpers/AuthService";
-
 import Login from "./routes/Login";
 import Companies from "./routes/Companies";
 import Users from "./routes/Users";
 
-const Auth = new AuthService();
-
 class App extends Component {
-  componentDidMount(res) {}
+  constructor(props) {
+    super(props);
+    this.Auth = new AuthService();
+  }
 
   render() {
     return (
@@ -26,7 +23,7 @@ class App extends Component {
               <div>
                 <AppBar position="static" color="default">
                   <Toolbar>
-                    <Link to="/login" onClick={Auth.logout}>
+                    <Link to="/login" onClick={this.Auth.logout}>
                       <Button>Logout</Button>
                     </Link>
                     <Link to="/users">
@@ -37,7 +34,6 @@ class App extends Component {
                     </Link>
                   </Toolbar>
                 </AppBar>
-
                 <Route exact path="/login" component={Login} />
                 <Route path="/companies" component={Companies} />
                 <Route exact path="/users" component={Users} />
