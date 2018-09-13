@@ -11,7 +11,7 @@ npm start
 baza sama sie utworzy, dodatkowo doda sie konto admina (login: admin, hasło: admin)
 
 
-zastosowane moduly:  
+**zastosowane moduly:**  
 
 frontend:  
 react-material  
