@@ -1,4 +1,5 @@
 import React, { Component } from "react";
+import axios from "axios";
 import Button from "@material-ui/core/Button";
 import TextField from "@material-ui/core/TextField";
 import Dialog from "@material-ui/core/Dialog";
@@ -28,7 +29,6 @@ class Users extends Component {
       newUserEmail: "",
       users: []
     };
-
     this.handleInputChange = this.handleInputChange.bind(this);
     this.handleAddUser = this.handleAddUser.bind(this);
     this.handleEditUser = this.handleEditUser.bind(this);
@@ -40,60 +40,46 @@ class Users extends Component {
   }
 
   componentDidMount(res) {
-    fetch("/users")
-      .then(res => res.json())
-      .then(users => this.setState({ users }));
+    axios.get("/users").then(res => {
+      const users = res.data;
+      this.setState({ users });
+    });
   }
 
   handleAddUser(event) {
     event.preventDefault();
-    fetch("/users", {
-      method: "POST",
-      headers: {
-        Accept: "application/json",
-        "Content-Type": "application/json"
-      },
-      body: JSON.stringify({
-        username: this.state.newUserUsername,
-        password: this.state.newUserPassword,
-        email: this.state.newUserEmail
-      })
-    })
-      .then(res => res.json())
-      .then(newUser =>
-        this.setState({
-          users: [...this.state.users, newUser]
-        })
-      )
-      .finally(this.handleCloseAddUser());
+    const user = {
+      username: this.state.newUserUsername,
+      password: this.state.newUserPassword,
+      email: this.state.newUserEmail
+    };
+    axios.post("/users", user).then(newUser => {
+      this.setState({
+        users: [...this.state.users, newUser.data]
+      });
+      this.handleCloseAddUser();
+    });
   }
 
   handleEditUser(event) {
     event.preventDefault();
-    fetch("/users", {
-      method: "PATCH",
-      headers: {
-        Accept: "application/json",
-        "Content-Type": "application/json"
-      },
-      body: JSON.stringify({
-        id: this.state.selectedUserId,
-        username: this.state.selectedUserUsername,
-        password: this.state.selectedUserPassword,
-        email: this.state.selectedUserEmail
-      })
-    })
-      .then(() => {
-        const newUsersArray = JSON.parse(JSON.stringify(this.state.users));
-        newUsersArray.map(user => {
-          if (user.id == this.state.selectedUserId) {
-            user.username = this.state.selectedUserUsername;
-            user.email = this.state.selectedUserEmail;
-          }
-        });
-        this.setState({ users: newUsersArray });
-      })
-      .finally(this.handleCloseEditUser());
+    const user = {
+      id: this.state.selectedUserId,
+      username: this.state.selectedUserUsername,
+      password: this.state.selectedUserPassword,
+      email: this.state.selectedUserEmail
+    };
+    axios.patch("/users", user).then(() => {
+      const newUsersArray = JSON.parse(JSON.stringify(this.state.users));
+      newUsersArray.map(user => {
+        if (user.id == this.state.selectedUserId) {
+          user.username = this.state.selectedUserUsername;
+          user.email = this.state.selectedUserEmail;
+        }
+      });
+      this.setState({ users: newUsersArray });
+      this.handleCloseEditUser();
+    });
   }
 
   handleInputChange(event) {
@@ -131,27 +117,20 @@ class Users extends Component {
 
   handleDeleteUser(event) {
     const idUser = event.target.value;
-    fetch("/users", {
-      method: "DELETE",
-      headers: {
-        Accept: "application/json",
-        "Content-Type": "application/json"
-      },
-      body: JSON.stringify({
-        id: idUser
-      })
-    })
-      .then(() => {
-        const newUsersArray = JSON.parse(JSON.stringify(this.state.users));
-        const deletedElementIndex = newUsersArray.findIndex(
-          (element, index, array) => {
-            return element.id == idUser;
-          }
-        );
-        newUsersArray.splice(deletedElementIndex, 1);
-        this.setState({ users: newUsersArray });
-      })
-      .then(this.handleCloseEditUser());
+    const user = {
+      id: idUser
+    };
+    axios.delete("/users", { data: user }).then(() => {
+      const newUsersArray = JSON.parse(JSON.stringify(this.state.users));
+      const deletedElementIndex = newUsersArray.findIndex(
+        (element, index, array) => {
+          return element.id == idUser;
+        }
+      );
+      newUsersArray.splice(deletedElementIndex, 1);
+      this.setState({ users: newUsersArray });
+      this.handleCloseEditUser();
+    });
   }
 
   render() {

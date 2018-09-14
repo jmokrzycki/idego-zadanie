@@ -1,4 +1,5 @@
 import React, { Component } from "react";
+import axios from "axios";
 import Button from "@material-ui/core/Button";
 import TextField from "@material-ui/core/TextField";
 import Dialog from "@material-ui/core/Dialog";
@@ -26,7 +27,6 @@ class Companies extends Component {
       newCompanyEmail: "",
       companies: []
     };
-
     this.handleInputChange = this.handleInputChange.bind(this);
     this.handleAddCompany = this.handleAddCompany.bind(this);
     this.handleOpenAddCompany = this.handleOpenAddCompany.bind(this);
@@ -34,35 +34,28 @@ class Companies extends Component {
   }
 
   componentDidMount(res) {
-    fetch("/companies")
-      .then(res => res.json())
-      .then(companies => this.setState({ companies }));
+    axios.get("/companies").then(res => {
+      const companies = res.data;
+      this.setState({ companies });
+    });
   }
 
   handleAddCompany(event) {
     event.preventDefault();
-    fetch("/companies", {
-      method: "POST",
-      headers: {
-        Accept: "application/json",
-        "Content-Type": "application/json"
-      },
-      body: JSON.stringify({
-        name: this.state.newCompanyName,
-        address: this.state.newCompanyAddress,
-        nip: this.state.newCompanyNip,
-        regon: this.state.newCompanyRegon,
-        phoneNumber: this.state.newCompanyPhoneNumber,
-        email: this.state.newCompanyEmail
-      })
-    })
-      .then(res => res.json())
-      .then(newCompany =>
-        this.setState({
-          companies: [...this.state.companies, newCompany]
-        })
-      )
-      .finally(this.handleCloseAddCompany());
+    const company = {
+      name: this.state.newCompanyName,
+      address: this.state.newCompanyAddress,
+      nip: this.state.newCompanyNip,
+      regon: this.state.newCompanyRegon,
+      phoneNumber: this.state.newCompanyPhoneNumber,
+      email: this.state.newCompanyEmail
+    };
+    axios.post("/companies", company).then(newCompany => {
+      this.setState({
+        companies: [...this.state.companies, newCompany.data]
+      });
+      this.handleCloseAddCompany();
+    });
   }
 
   handleInputChange(event) {

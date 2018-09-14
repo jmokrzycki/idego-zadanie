@@ -11,12 +11,10 @@ class Login extends Component {
       username: "",
       password: ""
     };
-
+    this.Auth = new AuthService();
     this.handleInputChange = this.handleInputChange.bind(this);
     this.handleLogin = this.handleLogin.bind(this);
     this.handleLogout = this.handleLogout.bind(this);
-
-    this.Auth = new AuthService();
   }
 
   handleLogin(event) {
