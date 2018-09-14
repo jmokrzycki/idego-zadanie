@@ -16,6 +16,7 @@ baza sama sie utworzy, dodatkowo doda sie konto admina (login: admin, hasło: ad
 frontend:  
 react-material  
 react-router-dom (routing)  
+axios  (komunikacja z serweren)
 
 backend:  
 Sequelize (orm, uzyty do obslugi sqlite3)  
