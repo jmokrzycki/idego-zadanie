@@ -13,19 +13,14 @@ import TableHead from "@material-ui/core/TableHead";
 import TableRow from "@material-ui/core/TableRow";
 import Paper from "@material-ui/core/Paper";
 import withAuth from "../helpers/withAuth";
+import { connect } from "react-redux";
+import { setCompanies, addCompany, updateForm } from "../actions/companies";
 
 class Companies extends Component {
   constructor(props) {
     super(props);
     this.state = {
-      openAddCompanyDialog: false,
-      newCompanyName: "",
-      newCompanyAddress: "",
-      newCompanyNip: "",
-      newCompanyRegon: "",
-      newCompanyPhoneNumber: "",
-      newCompanyEmail: "",
-      companies: []
+      openAddCompanyDialog: false
     };
     this.handleInputChange = this.handleInputChange.bind(this);
     this.handleAddCompany = this.handleAddCompany.bind(this);
@@ -36,32 +31,28 @@ class Companies extends Component {
   componentDidMount(res) {
     axios.get("/companies").then(res => {
       const companies = res.data;
-      this.setState({ companies });
+      this.props.setCompanies(companies);
     });
   }
 
   handleAddCompany(event) {
     event.preventDefault();
     const company = {
-      name: this.state.newCompanyName,
-      address: this.state.newCompanyAddress,
-      nip: this.state.newCompanyNip,
-      regon: this.state.newCompanyRegon,
-      phoneNumber: this.state.newCompanyPhoneNumber,
-      email: this.state.newCompanyEmail
+      name: this.props.company.name,
+      address: this.props.company.address,
+      nip: this.props.company.nip,
+      regon: this.props.company.regon,
+      phoneNumber: this.props.company.phoneNumber,
+      email: this.props.company.email
     };
     axios.post("/companies", company).then(newCompany => {
-      this.setState({
-        companies: [...this.state.companies, newCompany.data]
-      });
+      this.props.addCompany(newCompany.data);
       this.handleCloseAddCompany();
     });
   }
 
   handleInputChange(event) {
-    this.setState({
-      [event.target.name]: event.target.value
-    });
+    this.props.updateForm([event.target.name], event.target.value);
   }
 
   handleOpenAddCompany() {
@@ -87,7 +78,7 @@ class Companies extends Component {
               <TextField
                 margin="dense"
                 label="Company name"
-                name="newCompanyName"
+                name="name"
                 type="text"
                 fullWidth
                 onChange={this.handleInputChange}
@@ -95,7 +86,7 @@ class Companies extends Component {
               <TextField
                 margin="dense"
                 label="Company address"
-                name="newCompanyAddress"
+                name="address"
                 type="text"
                 fullWidth
                 onChange={this.handleInputChange}
@@ -103,7 +94,7 @@ class Companies extends Component {
               <TextField
                 margin="dense"
                 label="NIP"
-                name="newCompanyNip"
+                name="nip"
                 type="text"
                 fullWidth
                 onChange={this.handleInputChange}
@@ -111,7 +102,7 @@ class Companies extends Component {
               <TextField
                 margin="dense"
                 label="REGON"
-                name="newCompanyRegon"
+                name="regon"
                 type="text"
                 fullWidth
                 onChange={this.handleInputChange}
@@ -119,7 +110,7 @@ class Companies extends Component {
               <TextField
                 margin="dense"
                 label="Phone number"
-                name="newCompanyPhoneNumber"
+                name="phoneNumber"
                 type="text"
                 fullWidth
                 onChange={this.handleInputChange}
@@ -127,7 +118,7 @@ class Companies extends Component {
               <TextField
                 margin="dense"
                 label="Email"
-                name="newCompanyEmail"
+                name="email"
                 type="text"
                 fullWidth
                 onChange={this.handleInputChange}
@@ -156,7 +147,7 @@ class Companies extends Component {
               </TableRow>
             </TableHead>
             <TableBody>
-              {this.state.companies.map(company => {
+              {this.props.companies.map(company => {
                 return (
                   <TableRow key={company.id}>
                     <TableCell numeric>{company.name}</TableCell>
@@ -176,4 +167,30 @@ class Companies extends Component {
   }
 }
 
-export default withAuth(Companies);
+const mapStateToProps = state => {
+  return {
+    companies: state.companies.companies,
+    company: state.companies.company
+  };
+};
+
+const mapDispatchToProps = dispatch => {
+  return {
+    setCompanies: companies => {
+      dispatch(setCompanies(companies));
+    },
+    addCompany: company => {
+      dispatch(addCompany(company));
+    },
+    updateForm: (key, value) => {
+      dispatch(updateForm(key, value));
+    }
+  };
+};
+
+export default withAuth(
+  connect(
+    mapStateToProps,
+    mapDispatchToProps
+  )(Companies)
+);

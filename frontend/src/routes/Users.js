@@ -13,6 +13,8 @@ import TableHead from "@material-ui/core/TableHead";
 import TableRow from "@material-ui/core/TableRow";
 import Paper from "@material-ui/core/Paper";
 import withAuth from "../helpers/withAuth";
+import { connect } from "react-redux";
+import { setUsers, addUser, selectUser, updateForm } from "../actions/users";
 
 class Users extends Component {
   constructor(props) {
@@ -20,13 +22,10 @@ class Users extends Component {
     this.state = {
       openEditUserDialog: false,
       openAddUserDialog: false,
-      selectedUserId: "",
-      selectedUserUsername: "",
-      selectedUserPassword: "",
-      selectedUserEmail: "",
-      newUserUsername: "",
-      newUserPassword: "",
-      newUserEmail: "",
+      id: "",
+      username: "",
+      password: "",
+      email: "",
       users: []
     };
     this.handleInputChange = this.handleInputChange.bind(this);
@@ -42,21 +41,19 @@ class Users extends Component {
   componentDidMount(res) {
     axios.get("/users").then(res => {
       const users = res.data;
-      this.setState({ users });
+      this.props.setUsers(users);
     });
   }
 
   handleAddUser(event) {
     event.preventDefault();
     const user = {
-      username: this.state.newUserUsername,
-      password: this.state.newUserPassword,
-      email: this.state.newUserEmail
+      username: this.props.user.username,
+      password: this.props.user.password,
+      email: this.props.user.email
     };
     axios.post("/users", user).then(newUser => {
-      this.setState({
-        users: [...this.state.users, newUser.data]
-      });
+      this.props.addUser(newUser.data);
       this.handleCloseAddUser();
     });
   }
@@ -64,28 +61,26 @@ class Users extends Component {
   handleEditUser(event) {
     event.preventDefault();
     const user = {
-      id: this.state.selectedUserId,
-      username: this.state.selectedUserUsername,
-      password: this.state.selectedUserPassword,
-      email: this.state.selectedUserEmail
+      id: this.props.user.id,
+      username: this.props.user.username,
+      password: this.props.user.password,
+      email: this.props.user.email
     };
     axios.patch("/users", user).then(() => {
-      const newUsersArray = JSON.parse(JSON.stringify(this.state.users));
+      const newUsersArray = JSON.parse(JSON.stringify(this.props.users));
       newUsersArray.map(user => {
-        if (user.id == this.state.selectedUserId) {
-          user.username = this.state.selectedUserUsername;
-          user.email = this.state.selectedUserEmail;
+        if (user.id == this.props.user.id) {
+          user.username = this.props.user.username;
+          user.email = this.props.user.email;
         }
       });
-      this.setState({ users: newUsersArray });
+      this.props.setUsers(newUsersArray);
       this.handleCloseEditUser();
     });
   }
 
   handleInputChange(event) {
-    this.setState({
-      [event.target.name]: event.target.value
-    });
+    this.props.updateForm([event.target.name], event.target.value);
   }
 
   handleOpenAddUser() {
@@ -94,17 +89,15 @@ class Users extends Component {
 
   handleOpenEditUser(event) {
     const idUser = event.target.value;
-    const selectedUser = this.state.users.find(user => {
+    const selectedUser = this.props.users.find(user => {
       return user.id == idUser;
     });
-    this.setState(
-      {
-        selectedUserId: idUser,
-        selectedUserUsername: selectedUser.username,
-        selectedUserEmail: selectedUser.email
-      },
-      () => this.setState({ openEditUserDialog: true })
-    );
+    this.props.selectUser({
+      id: idUser,
+      username: selectedUser.username,
+      email: selectedUser.email
+    });
+    this.setState({ openEditUserDialog: true });
   }
 
   handleCloseEditUser() {
@@ -121,14 +114,14 @@ class Users extends Component {
       id: idUser
     };
     axios.delete("/users", { data: user }).then(() => {
-      const newUsersArray = JSON.parse(JSON.stringify(this.state.users));
+      const newUsersArray = JSON.parse(JSON.stringify(this.props.users));
       const deletedElementIndex = newUsersArray.findIndex(
         (element, index, array) => {
           return element.id == idUser;
         }
       );
       newUsersArray.splice(deletedElementIndex, 1);
-      this.setState({ users: newUsersArray });
+      this.props.setUsers(newUsersArray);
       this.handleCloseEditUser();
     });
   }
@@ -148,7 +141,7 @@ class Users extends Component {
               <TextField
                 margin="dense"
                 label="Username"
-                name="newUserUsername"
+                name="username"
                 type="text"
                 fullWidth
                 onChange={this.handleInputChange}
@@ -156,7 +149,7 @@ class Users extends Component {
               <TextField
                 margin="dense"
                 label="Password"
-                name="newUserPassword"
+                name="password"
                 type="password"
                 fullWidth
                 onChange={this.handleInputChange}
@@ -164,7 +157,7 @@ class Users extends Component {
               <TextField
                 margin="dense"
                 label="Email"
-                name="newUserEmail"
+                name="email"
                 type="email"
                 fullWidth
                 onChange={this.handleInputChange}
@@ -191,7 +184,7 @@ class Users extends Component {
               </TableRow>
             </TableHead>
             <TableBody>
-              {this.state.users.map(user => {
+              {this.props.users.map(user => {
                 return (
                   <TableRow key={user.id}>
                     <TableCell numeric>{user.username}</TableCell>
@@ -223,16 +216,16 @@ class Users extends Component {
               <TextField
                 margin="dense"
                 label="Username"
-                name="selectedUserUsername"
+                name="username"
                 type="text"
                 fullWidth
-                value={this.state.selectedUserUsername}
+                value={this.props.user.username}
                 onChange={this.handleInputChange}
               />
               <TextField
                 margin="dense"
                 label="New password (if needed, otherwise leave it blank)"
-                name="selectedUserPassword"
+                name="password"
                 type="password"
                 fullWidth
                 onChange={this.handleInputChange}
@@ -240,10 +233,10 @@ class Users extends Component {
               <TextField
                 margin="dense"
                 label="Email"
-                name="selectedUserEmail"
+                name="email"
                 type="email"
                 fullWidth
-                value={this.state.selectedUserEmail}
+                value={this.props.user.email}
                 onChange={this.handleInputChange}
               />
             </form>
@@ -262,4 +255,33 @@ class Users extends Component {
   }
 }
 
-export default withAuth(Users);
+const mapStateToProps = state => {
+  return {
+    users: state.users.users,
+    user: state.users.user
+  };
+};
+
+const mapDispatchToProps = dispatch => {
+  return {
+    setUsers: users => {
+      dispatch(setUsers(users));
+    },
+    addUser: users => {
+      dispatch(addUser(users));
+    },
+    selectUser: user => {
+      dispatch(selectUser(user));
+    },
+    updateForm: (key, value) => {
+      dispatch(updateForm(key, value));
+    }
+  };
+};
+
+export default withAuth(
+  connect(
+    mapStateToProps,
+    mapDispatchToProps
+  )(Users)
+);

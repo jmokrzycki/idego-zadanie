@@ -7,14 +7,41 @@ import AuthService from "./helpers/AuthService";
 import Login from "./routes/Login";
 import Companies from "./routes/Companies";
 import Users from "./routes/Users";
+import { connect } from "react-redux";
+import { setLoggedInStatus } from "./actions/login";
 
 class App extends Component {
   constructor(props) {
     super(props);
     this.Auth = new AuthService();
+    this.handleUpdateLoggedInState = this.handleUpdateLoggedInState.bind(this);
+    this.handleLogout = this.handleLogout.bind(this);
+    this.loggedIn = this.Auth.loggedIn();
+    this.handleUpdateLoggedInState(this.loggedIn);
+  }
+
+  handleLogout() {
+    this.Auth.logout();
+    this.loggedIn = this.Auth.loggedIn();
+    this.handleUpdateLoggedInState(this.loggedIn);
+  }
+
+  handleUpdateLoggedInState(status) {
+    this.props.setLoggedInStatus(status);
   }
 
   render() {
+    const isLoggedIn = this.props.loggedInStatus;
+    let logoutButton;
+    if (isLoggedIn) {
+      logoutButton = (
+        <Link to="/login" onClick={this.handleLogout}>
+          <Button>Logout</Button>
+        </Link>
+      );
+    } else {
+      logoutButton = <div />;
+    }
     return (
       <div className="App">
         <div>
@@ -23,9 +50,7 @@ class App extends Component {
               <div>
                 <AppBar position="static" color="default">
                   <Toolbar>
-                    <Link to="/login" onClick={this.Auth.logout}>
-                      <Button>Logout</Button>
-                    </Link>
+                    {logoutButton}
                     <Link to="/users">
                       <Button>Users</Button>
                     </Link>
@@ -46,4 +71,21 @@ class App extends Component {
   }
 }
 
-export default App;
+const mapStateToProps = state => {
+  return {
+    loggedInStatus: state.login.loggedInStatus
+  };
+};
+
+const mapDispatchToProps = dispatch => {
+  return {
+    setLoggedInStatus: status => {
+      dispatch(setLoggedInStatus(status));
+    }
+  };
+};
+
+export default connect(
+  mapStateToProps,
+  mapDispatchToProps
+)(App);
